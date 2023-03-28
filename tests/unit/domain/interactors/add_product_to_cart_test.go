@@ -6,7 +6,7 @@ import (
 	"food-app/domain/adapters"
 	"food-app/domain/entities"
 	"food-app/domain/interactors"
-	"food-app/utils"
+	"food-app/tests/utils"
 )
 
 func TestAddProductToCart(t *testing.T) {

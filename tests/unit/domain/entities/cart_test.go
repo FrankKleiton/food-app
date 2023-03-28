@@ -3,7 +3,7 @@ package test_entities
 import (
 	"testing"
 
-	"food-app/utils"
+	"food-app/tests/utils"
 )
 
 func TestProduct(t *testing.T) {
