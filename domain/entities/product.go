@@ -1,29 +1,29 @@
 package entities
 
 type Product struct {
-	id          string
-	name        string
-	price       float64
-	image       string
-	description string
+	Id          string
+	Name        string
+	Price       float64
+	Image       string
+	Description string
 }
 
 func (p *Product) GetId() string {
-	return p.id
+	return p.Id
 }
 
 func (p *Product) GetName() string {
-	return p.name
+	return p.Name
 }
 
 func (p *Product) GetPrice() float64 {
-	return p.price
+	return p.Price
 }
 
 func (p *Product) GetImage() string {
-	return p.image
+	return p.Image
 }
 
 func (p *Product) GetDescription() string {
-	return p.description
+	return p.Description
 }

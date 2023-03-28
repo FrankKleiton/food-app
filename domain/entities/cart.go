@@ -2,6 +2,22 @@ package entities
 
 import "food-app/domain/adapters"
 
+type NotFoundCart struct{}
+
+func (c *NotFoundCart) AddItem(p adapters.IProduct) {}
+
+func (c *NotFoundCart) GetItem(id string) adapters.IItem {
+	return nil
+}
+
+func (c *NotFoundCart) GetTotal() float64 {
+	return -1111.11
+}
+
+func (c *NotFoundCart) GetItems() []adapters.IItem {
+	return nil
+}
+
 type Cart struct {
 	Items []adapters.IItem
 }
