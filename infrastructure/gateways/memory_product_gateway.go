@@ -18,22 +18,30 @@ func (g MemoryProductGateway) FindById(id string) adapters.IProduct {
 	return nil
 }
 
-var defaultInstance = MemoryProductGateway{
-	Products: []entities.Product{
-		{
-			Id:    "1",
-			Name:  "Product 1",
-			Price: 1.0,
+func MakeProductGateway() MemoryProductGateway {
+	return MemoryProductGateway{
+		Products: []entities.Product{
+			{
+				Id:          "1",
+				Name:        "Product 1",
+				Price:       1.0,
+				Image:       "https://via.placeholder.com/150",
+				Description: "This is a description of product 1",
+			},
+			{
+				Id:          "2",
+				Name:        "Product 2",
+				Price:       2.0,
+				Image:       "https://via.placeholder.com/150",
+				Description: "This is a description of product 2",
+			},
+			{
+				Id:          "3",
+				Name:        "Product 3",
+				Price:       3.0,
+				Image:       "https://via.placeholder.com/150",
+				Description: "This is a description of product 3",
+			},
 		},
-		{
-			Id:    "2",
-			Name:  "Product 2",
-			Price: 2.0,
-		},
-		{
-			Id:    "3",
-			Name:  "Product 3",
-			Price: 3.0,
-		},
-	},
+	}
 }
