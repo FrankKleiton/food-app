@@ -13,13 +13,7 @@ type Server struct {
 
 func (s *Server) Serve(port int) {
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		response := Response{
-			HttpResponse: w,
-		}
-		request := Request{
-			HttpRequest: r,
-		}
-		s.Router.Route(response, &request)
+		s.Router.Route(w, r)
 	})
 	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(port), handler))
 }

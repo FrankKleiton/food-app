@@ -1,11 +1,11 @@
 package http
 
-import "food-app/presentation/adapters"
+import "net/http"
 
 func MakeRouter() *Router {
 	router := Router{}
 
-	router.AddRoute("GET", "/test", func(response adapters.IResponse, request adapters.IRequest) {
+	router.AddRoute("GET", "/test", func(response http.ResponseWriter, request *http.Request) {
 		// response.Write([]byte("Hello world!"))
 	})
 
