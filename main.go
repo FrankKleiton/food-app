@@ -2,11 +2,16 @@ package main
 
 import (
 	httpServer "food-app/presentation/http"
+
+	"food-app/infrastructure/gateways"
 )
 
 func main() {
+	productGateway := gateways.MemoryProductGateway{}
+	cartGateway := gateways.MemoryCartGateway{}
+
 	server := httpServer.Server{
-		Router: httpServer.MakeRouter(),
+		Router: httpServer.MakeRouter(productGateway, &cartGateway),
 	}
 
 	server.Serve(5000)
