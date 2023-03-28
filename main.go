@@ -1,12 +1,20 @@
 package main
 
 import (
-	"food-app/presentation"
-	"log"
-	"net/http"
+	"food-app/presentation/adapters"
+	httpServer "food-app/presentation/http"
 )
 
 func main() {
-	handler := http.HandlerFunc(presentation.Serve)
-	log.Fatal(http.ListenAndServe(":5000", handler))
+	router := httpServer.Router{}
+
+	router.AddRoute("GET", "/test", func(response adapters.IResponse, request adapters.IRequest) {
+		// response.Write([]byte("Hello world!"))
+	})
+
+	server := httpServer.Server{
+		Router: &router,
+	}
+
+	server.Serve(5000)
 }
