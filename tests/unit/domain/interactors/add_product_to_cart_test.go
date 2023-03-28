@@ -6,12 +6,12 @@ import (
 	"food-app/domain/adapters"
 	"food-app/domain/entities"
 	"food-app/domain/interactors"
-	"food-app/tests/utils"
+	"food-app/tests/testing_utils"
 )
 
 func TestAddProductToCart(t *testing.T) {
 	t.Run("Add product to new cart", func(t *testing.T) {
-		products, _, productGateway, cartGateway, teardown := utils.SetupProducts(t)
+		products, _, productGateway, cartGateway, teardown := testing_utils.SetupProducts(t)
 		defer teardown()
 
 		productIds := []string{"0", "1"}
@@ -25,15 +25,15 @@ func TestAddProductToCart(t *testing.T) {
 
 		result := sut.Execute(productIds)
 
-		utils.AssertEqual(len(result.GetItems()), 2, t)
+		testing_utils.AssertEqual(len(result.GetItems()), 2, t)
 
 		for index, product := range result.GetItems() {
-			utils.AssertEqual(product.GetId(), productIds[index], t)
+			testing_utils.AssertEqual(product.GetId(), productIds[index], t)
 		}
 	})
 
 	t.Run("Add product to existing cart", func(t *testing.T) {
-		products, _, productGateway, cartGateway, teardown := utils.SetupProducts(t)
+		products, _, productGateway, cartGateway, teardown := testing_utils.SetupProducts(t)
 		defer teardown()
 
 		productIds := []string{"0", "1"}
@@ -57,12 +57,12 @@ func TestAddProductToCart(t *testing.T) {
 
 		result := sut.Execute([]string{"1"})
 
-		utils.AssertEqual(len(result.GetItems()), 2, t)
+		testing_utils.AssertEqual(len(result.GetItems()), 2, t)
 
 		for index, product := range result.GetItems() {
-			utils.AssertEqual(product.GetId(), productIds[index], t)
+			testing_utils.AssertEqual(product.GetId(), productIds[index], t)
 		}
 
-		utils.AssertEqual(result, &cart, t)
+		testing_utils.AssertEqual(result, &cart, t)
 	})
 }

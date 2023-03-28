@@ -1,4 +1,4 @@
-package utils
+package testing_utils
 
 import (
 	"strconv"
