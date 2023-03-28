@@ -11,13 +11,13 @@ type AddProductToCart struct {
 }
 
 func (a *AddProductToCart) Execute(ids []string) adapters.ICart {
-	cart, _ := a.CartGateway.GetFilledCart()
+	cart := a.CartGateway.GetFilledCart()
 
 	if cart == nil {
 		cart = &entities.Cart{}
 	}
 	for _, id := range ids {
-		product, _ := a.ProductGateway.FindById(id)
+		product := a.ProductGateway.FindById(id)
 
 		cart.AddItem(product)
 	}

@@ -3,11 +3,10 @@ package interactors
 import (
 	"testing"
 
-	"food-app/utils"
-
 	"food-app/domain/adapters"
 	"food-app/domain/entities"
 	"food-app/domain/interactors"
+	"food-app/utils"
 )
 
 func TestAddProductToCart(t *testing.T) {
@@ -17,10 +16,10 @@ func TestAddProductToCart(t *testing.T) {
 
 		productIds := []string{"0", "1"}
 
-		cartGateway.EXPECT().GetFilledCart().AnyTimes().Return(nil, nil)
+		cartGateway.EXPECT().GetFilledCart().AnyTimes().Return(nil)
 
-		productGateway.EXPECT().FindById(productIds[0]).Return(products[0], nil)
-		productGateway.EXPECT().FindById(productIds[1]).Return(products[1], nil)
+		productGateway.EXPECT().FindById(productIds[0]).Return(products[0])
+		productGateway.EXPECT().FindById(productIds[1]).Return(products[1])
 
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
@@ -50,9 +49,9 @@ func TestAddProductToCart(t *testing.T) {
 			Items: items,
 		}
 
-		cartGateway.EXPECT().GetFilledCart().AnyTimes().Return(&cart, nil)
+		cartGateway.EXPECT().GetFilledCart().AnyTimes().Return(&cart)
 
-		productGateway.EXPECT().FindById(productIds[1]).Return(products[1], nil)
+		productGateway.EXPECT().FindById(productIds[1]).Return(products[1])
 
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 

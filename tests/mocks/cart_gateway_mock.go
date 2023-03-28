@@ -5,10 +5,10 @@
 package mocks
 
 import (
-	adapters "food-app/domain/adapters"
 	reflect "reflect"
-
 	gomock "github.com/golang/mock/gomock"
+	
+	adapters "food-app/domain/adapters"
 )
 
 // MockICartGateway is a mock of ICartGateway interface.
@@ -35,12 +35,11 @@ func (m *MockICartGateway) EXPECT() *MockICartGatewayMockRecorder {
 }
 
 // GetFilledCart mocks base method.
-func (m *MockICartGateway) GetFilledCart() (adapters.ICart, error) {
+func (m *MockICartGateway) GetFilledCart() adapters.ICart {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetFilledCart")
 	ret0, _ := ret[0].(adapters.ICart)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	return ret0
 }
 
 // GetFilledCart indicates an expected call of GetFilledCart.
