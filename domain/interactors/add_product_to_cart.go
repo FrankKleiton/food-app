@@ -17,6 +17,7 @@ func (a *AddProductToCart) Execute(ids []string) adapters.ICart {
 		cart = &entities.Cart{}
 	}
 	for _, id := range ids {
+		// TODO: handle nil value
 		product := a.ProductGateway.FindById(id)
 
 		cart.AddItem(product)
