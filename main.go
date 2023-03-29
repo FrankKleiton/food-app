@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	productGateway := gateways.MemoryProductGateway{}
+	productGateway := gateways.MakeProductGateway()
 	cartGateway := gateways.MemoryCartGateway{}
 
 	server := httpServer.Server{

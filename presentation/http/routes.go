@@ -2,9 +2,10 @@ package http
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"food-app/domain/adapters"
 	"food-app/domain/interactors"
-	"net/http"
 )
 
 type AddProductToCartModel struct {
@@ -29,9 +30,10 @@ func MakeRouter(
 
 		result := usecase.Execute(model.Products)
 
-		json.NewEncoder(response).Encode(result)
+		cartJson, _ := json.Marshal(result)
 
-		response.WriteHeader(http.StatusOK)
+		response.Header().Set("Content-Type", "application/json")
+		response.Write(cartJson)
 	})
 
 	return &router
