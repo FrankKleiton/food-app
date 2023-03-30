@@ -6,4 +6,5 @@ type IProduct interface {
 	GetPrice() float64
 	GetImage() string
 	GetDescription() string
+	IsValid() bool
 }

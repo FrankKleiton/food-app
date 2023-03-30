@@ -1,19 +1,33 @@
 package interactors
 
 import (
+	"reflect"
 	"testing"
 
-	"food-app/domain/adapters"
+	"github.com/golang/mock/gomock"
+
 	"food-app/domain/entities"
 	"food-app/domain/interactors"
+	"food-app/tests/mocks"
 	"food-app/tests/testing_utils"
 )
 
-func TestAddProductToCart(t *testing.T) {
-	t.Run("Add product to new cart", func(t *testing.T) {
-		products, _, productGateway, cartGateway, teardown := testing_utils.SetupProducts(t)
-		defer teardown()
+var productGateway *mocks.MockIProductGateway
+var cartGateway *mocks.MockICartGateway
+var products []*mocks.MockIProduct
 
+func Before(callback func(t *testing.T)) func(t *testing.T) {
+	ctrl := gomock.NewController(&testing.T{})
+	productGateway = mocks.NewMockIProductGateway(ctrl)
+	cartGateway = mocks.NewMockICartGateway(ctrl)
+	products = testing_utils.MakeProducts(ctrl)
+	defer ctrl.Finish()
+
+	return callback
+}
+
+func TestAddProductToCart(t *testing.T) {
+	t.Run("Add product to new cart", Before(func(t *testing.T) {
 		productIds := []string{"0", "1"}
 
 		cartGateway.EXPECT().GetFilledCart().AnyTimes().Return(nil)
@@ -23,46 +37,25 @@ func TestAddProductToCart(t *testing.T) {
 
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
-		result := sut.Execute(productIds)
+		result, _ := sut.Execute(productIds)
 
 		testing_utils.AssertEqual(len(result.GetItems()), 2, t)
 
 		for index, product := range result.GetItems() {
 			testing_utils.AssertEqual(product.GetId(), productIds[index], t)
 		}
-	})
+	}))
 
-	t.Run("Add product to existing cart", func(t *testing.T) {
-		products, _, productGateway, cartGateway, teardown := testing_utils.SetupProducts(t)
-		defer teardown()
-
-		productIds := []string{"0", "1"}
-
-		var items []adapters.IItem
-
-		items = append(items, &(entities.Item{
-			Product: products[0],
-			Amount:  1,
-		}))
-
-		cart := entities.Cart{
-			Items: items,
-		}
-
-		cartGateway.EXPECT().GetFilledCart().AnyTimes().Return(&cart)
-
-		productGateway.EXPECT().FindById(productIds[1]).Return(products[1])
+	t.Run("Add product to existing cart", Before(func(t *testing.T) {
+		cartGateway.EXPECT().GetFilledCart().AnyTimes().Return(nil)
+		id := "1"
+		productGateway.EXPECT().FindById(id).Return(nil)
 
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
-		result := sut.Execute([]string{"1"})
+		result, error := sut.Execute([]string{id})
 
-		testing_utils.AssertEqual(len(result.GetItems()), 2, t)
-
-		for index, product := range result.GetItems() {
-			testing_utils.AssertEqual(product.GetId(), productIds[index], t)
-		}
-
-		testing_utils.AssertEqual(result, &cart, t)
-	})
+		testing_utils.AssertTrue(reflect.TypeOf(result) == reflect.TypeOf(&entities.NotFoundCart{}), t)
+		testing_utils.AssertEqual(error.Error(), "cannot add null value to cart", t)
+	}))
 }

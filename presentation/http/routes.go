@@ -28,9 +28,11 @@ func MakeRouter(
 		}
 		usecase := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
-		result := usecase.Execute(model.Products)
+		result, _ := usecase.Execute(model.Products)
 
 		cartJson, _ := json.Marshal(result)
+
+		// if ()
 
 		response.Header().Set("Content-Type", "application/json")
 		response.Write(cartJson)

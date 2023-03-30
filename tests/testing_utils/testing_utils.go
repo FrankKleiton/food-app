@@ -6,7 +6,6 @@ import (
 
 	"github.com/golang/mock/gomock"
 
-	"food-app/domain/entities"
 	"food-app/tests/mocks"
 )
 
@@ -18,12 +17,13 @@ func AssertEqual(got any, want any, t *testing.T) {
 	}
 }
 
-func SetupProducts(t *testing.T) ([]*mocks.MockIProduct, entities.Cart, *mocks.MockIProductGateway, *mocks.MockICartGateway, func()) {
-	ctrl := gomock.NewController(t)
-	cart := entities.Cart{}
-	productGateway := mocks.NewMockIProductGateway(ctrl)
-	cartGateway := mocks.NewMockICartGateway(ctrl)
+func AssertTrue(got any, t *testing.T) {
+	t.Helper()
 
+	AssertEqual(got, true, t)
+}
+
+func MakeProducts(ctrl *gomock.Controller) []*mocks.MockIProduct {
 	const size = 10
 	products := make([]*mocks.MockIProduct, size)
 
@@ -32,7 +32,5 @@ func SetupProducts(t *testing.T) ([]*mocks.MockIProduct, entities.Cart, *mocks.M
 		products[i].EXPECT().GetId().AnyTimes().Return(strconv.Itoa(i))
 	}
 
-	return products, cart, productGateway, cartGateway, func() {
-		ctrl.Finish()
-	}
+	return products
 }

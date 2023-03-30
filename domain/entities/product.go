@@ -27,3 +27,7 @@ func (p *Product) GetImage() string {
 func (p *Product) GetDescription() string {
 	return p.Description
 }
+
+func (p Product) IsValid() bool {
+	return true
+}
