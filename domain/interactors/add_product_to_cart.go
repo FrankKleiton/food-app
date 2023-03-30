@@ -13,17 +13,16 @@ type AddProductToCart struct {
 }
 
 func (a *AddProductToCart) Execute(ids []string) (adapters.ICart, error) {
-	cart := a.CartGateway.GetFilledCart()
+	cart := a.CartGateway.GetActiveCart()
 
 	if cart == nil {
 		cart = &entities.Cart{}
 	}
 	for _, id := range ids {
-		// TODO: handle nil value
 		product := a.ProductGateway.FindById(id)
 
 		if product == nil {
-			return &entities.NotFoundCart{}, errors.New("cannot add null value to cart") // TODO: handle
+			return &entities.NotFoundCart{}, errors.New("cannot add null value to cart")
 		}
 		cart.AddItem(product)
 	}

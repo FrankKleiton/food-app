@@ -30,7 +30,7 @@ func TestAddProductToCart(t *testing.T) {
 	t.Run("Add product to new cart", Before(func(t *testing.T) {
 		productIds := []string{"0", "1"}
 
-		cartGateway.EXPECT().GetFilledCart().AnyTimes().Return(nil)
+		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
 
 		productGateway.EXPECT().FindById(productIds[0]).Return(products[0])
 		productGateway.EXPECT().FindById(productIds[1]).Return(products[1])
@@ -47,7 +47,7 @@ func TestAddProductToCart(t *testing.T) {
 	}))
 
 	t.Run("Add product to existing cart", Before(func(t *testing.T) {
-		cartGateway.EXPECT().GetFilledCart().AnyTimes().Return(nil)
+		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
 		id := "1"
 		productGateway.EXPECT().FindById(id).Return(nil)
 

@@ -5,10 +5,10 @@
 package mocks
 
 import (
-	reflect "reflect"
-	gomock "github.com/golang/mock/gomock"
-	
 	adapters "food-app/domain/adapters"
+	reflect "reflect"
+
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockICartGateway is a mock of ICartGateway interface.
@@ -34,16 +34,16 @@ func (m *MockICartGateway) EXPECT() *MockICartGatewayMockRecorder {
 	return m.recorder
 }
 
-// GetFilledCart mocks base method.
-func (m *MockICartGateway) GetFilledCart() adapters.ICart {
+// GetActiveCart mocks base method.
+func (m *MockICartGateway) GetActiveCart() adapters.ICart {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFilledCart")
+	ret := m.ctrl.Call(m, "GetActiveCart")
 	ret0, _ := ret[0].(adapters.ICart)
 	return ret0
 }
 
-// GetFilledCart indicates an expected call of GetFilledCart.
-func (mr *MockICartGatewayMockRecorder) GetFilledCart() *gomock.Call {
+// GetActiveCart indicates an expected call of GetActiveCart.
+func (mr *MockICartGatewayMockRecorder) GetActiveCart() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFilledCart", reflect.TypeOf((*MockICartGateway)(nil).GetFilledCart))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetActiveCart", reflect.TypeOf((*MockICartGateway)(nil).GetActiveCart))
 }

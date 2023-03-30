@@ -7,6 +7,6 @@ import (
 type MemoryCartGateway struct {
 }
 
-func (g *MemoryCartGateway) GetFilledCart() adapters.ICart {
+func (g *MemoryCartGateway) GetActiveCart() adapters.ICart {
 	return nil
 }
