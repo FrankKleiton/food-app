@@ -5,7 +5,8 @@ import (
 	"net/http"
 
 	"food-app/domain/adapters"
-	"food-app/domain/interactors"
+	"food-app/presentation/controllers"
+	"food-app/presentation/requests"
 )
 
 type AddProductToCartModel struct {
@@ -13,8 +14,7 @@ type AddProductToCartModel struct {
 }
 
 func MakeRouter(
-	productGateway adapters.IProductGateway,
-	cartGateway adapters.ICartGateway,
+	Interactor adapters.IAddProductToCart,
 ) *Router {
 	router := Router{}
 
@@ -26,9 +26,18 @@ func MakeRouter(
 		if err != nil {
 			println("Error: ", err.Error())
 		}
-		usecase := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
-		result, _ := usecase.Execute(model.Products)
+		if len(model.Products) == 0 {
+			response.WriteHeader(http.StatusBadRequest)
+			return
+		}
+
+		interactorRequest := requests.ProductsIds{Ids: model.Products}
+
+		controller := controllers.AddProductToCart{Interactor: Interactor}
+
+		controller.Execute(interactorRequest)
+		result, _ := Interactor.Execute(model.Products)
 
 		cartJson, _ := json.Marshal(result)
 

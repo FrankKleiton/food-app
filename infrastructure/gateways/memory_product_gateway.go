@@ -18,7 +18,7 @@ func (g MemoryProductGateway) FindById(id string) adapters.IProduct {
 	return &entities.NotFoundProduct{}
 }
 
-func MakeProductGateway() MemoryProductGateway {
+func MakeMemoryProductGateway() MemoryProductGateway {
 	return MemoryProductGateway{
 		Products: []entities.Product{
 			{
