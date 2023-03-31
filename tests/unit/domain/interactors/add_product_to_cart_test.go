@@ -47,10 +47,9 @@ func TestAddProductToCart(t *testing.T) {
 	}))
 
 	t.Run("Add product to existing cart", Before(func(t *testing.T) {
-		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
 		id := "1"
+		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
 		productGateway.EXPECT().FindById(id).Return(nil)
-
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
 		result, error := sut.Execute([]string{id})

@@ -18,12 +18,14 @@ func (a *AddProductToCart) Execute(ids []string) (adapters.ICart, error) {
 	if cart == nil {
 		cart = &entities.Cart{}
 	}
+
 	for _, id := range ids {
 		product := a.ProductGateway.FindById(id)
 
 		if product == nil {
 			return &entities.NotFoundCart{}, errors.New("cannot add null value to cart")
 		}
+
 		cart.AddItem(product)
 	}
 
