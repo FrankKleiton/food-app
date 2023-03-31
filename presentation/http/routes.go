@@ -2,8 +2,10 @@ package http
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"reflect"
 
 	"food-app/domain/adapters"
 	"food-app/presentation/controllers"
@@ -14,16 +16,20 @@ type AddProductToCartModel struct {
 	Products []string `json:"products"`
 }
 
+func (m AddProductToCartModel) ContainsIds() bool {
+	return len(m.Products) > 0
+}
+
 func MakeRouter(
 	Interactor adapters.IAddProductToCart,
 ) *Router {
 	router := Router{}
 
 	router.AddRoute("POST", "/cart", func(w http.ResponseWriter, r *http.Request) {
-		model, err := BuildModel[AddProductToCartModel](r.Body)
+		model := BuildModel[AddProductToCartModel](r.Body)
 
-		if len(model.Products) == 0 || err != nil {
-			w.WriteHeader(http.StatusBadRequest)
+		if !model.ContainsIds() {
+			JsonResponse(w, MakeError("We expect to receive valid product ids"), http.StatusBadRequest)
 			return
 		}
 
@@ -31,28 +37,40 @@ func MakeRouter(
 
 		controller := controllers.AddProductToCart{Interactor: Interactor}
 
-		controller.AddToCart(request)
+		result, _ := controller.AddToCart(request)
 
-		result, _ := Interactor.Execute(model.Products)
-
-		cartJson, err := json.Marshal(result)
-
-		if err != nil {
-			w.WriteHeader(http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(cartJson)
+		JsonResponse(w, result, http.StatusOK)
 	})
 
 	return &router
 }
 
-func BuildModel[T any](source io.Reader) (T, error) {
+func BuildModel[T any](source io.Reader) T {
 	var destination T
 
-	err := json.NewDecoder(source).Decode(&destination)
+	json.NewDecoder(source).Decode(&destination)
 
-	return destination, err
+	return destination
+}
+
+func JsonResponse(w http.ResponseWriter, data any, statusCode int) {
+	var responseJson []byte
+
+	if reflect.TypeOf(data).String() == "[]byte" {
+		responseJson = data.([]byte)
+	} else {
+		responseJson, _ = json.Marshal(data)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	w.WriteHeader(statusCode)
+
+	if data != nil && data != "" {
+		fmt.Fprintln(w, string(responseJson))
+	}
+}
+
+func MakeError(message string) map[string]string {
+	return map[string]string{"error": message}
 }

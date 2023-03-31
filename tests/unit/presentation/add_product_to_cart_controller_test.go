@@ -28,8 +28,6 @@ func Before(callback func(t *testing.T)) func(t *testing.T) {
 	return callback
 }
 
-// TODO:
-// - Pass actual request and response to the controller
 func TestAddProductToCartController(t *testing.T) {
 	t.Run("Should execute the usecase using valid product", Before(func(t *testing.T) {
 		// Arrange
@@ -43,7 +41,7 @@ func TestAddProductToCartController(t *testing.T) {
 
 		controller := controllers.AddProductToCart{Interactor: &interactor}
 
-		result := controller.AddToCart(request)
+		result, _ := controller.AddToCart(request)
 
 		testing_utils.AssertTrue(reflect.TypeOf(result) == reflect.TypeOf(&entities.Cart{}), t)
 	}))

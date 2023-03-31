@@ -9,8 +9,8 @@ type AddProductToCart struct {
 	Interactor adapters.IAddProductToCart
 }
 
-func (c *AddProductToCart) AddToCart(request requests.ProductsIds) adapters.ICart {
-	cart, _ := c.Interactor.Execute(request.Get())
+func (c *AddProductToCart) AddToCart(request requests.ProductsIds) (adapters.ICart, error) {
+	cart, err := c.Interactor.Execute(request.Get())
 
-	return cart
+	return cart, err
 }
