@@ -13,7 +13,8 @@ type AddProductToCart struct {
 }
 
 func (a *AddProductToCart) Execute(ids []string) (adapters.ICart, error) {
-	cart := a.CartGateway.GetActiveCart()
+	result := a.CartGateway.GetActiveCart()
+	cart := result
 
 	if cart == nil {
 		cart = &entities.Cart{}
@@ -27,6 +28,12 @@ func (a *AddProductToCart) Execute(ids []string) (adapters.ICart, error) {
 		}
 
 		cart.AddItem(product)
+	}
+
+	if result == nil {
+		a.CartGateway.SaveCart(cart)
+	} else {
+		a.CartGateway.UpdateCart(cart)
 	}
 
 	return cart, nil

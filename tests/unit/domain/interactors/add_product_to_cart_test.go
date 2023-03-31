@@ -15,9 +15,10 @@ import (
 var productGateway *mocks.MockIProductGateway
 var cartGateway *mocks.MockICartGateway
 var products []*mocks.MockIProduct
+var ctrl *gomock.Controller
 
 func Before(callback func(t *testing.T)) func(t *testing.T) {
-	ctrl := gomock.NewController(&testing.T{})
+	ctrl = gomock.NewController(&testing.T{})
 	productGateway = mocks.NewMockIProductGateway(ctrl)
 	cartGateway = mocks.NewMockICartGateway(ctrl)
 	products = testing_utils.MakeProducts(ctrl)
@@ -31,6 +32,7 @@ func TestAddProductToCart(t *testing.T) {
 		productIds := []string{"0", "1"}
 
 		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
+		cartGateway.EXPECT().SaveCart(gomock.Any()).Times(1)
 
 		productGateway.EXPECT().FindById(productIds[0]).Return(products[0])
 		productGateway.EXPECT().FindById(productIds[1]).Return(products[1])
@@ -46,9 +48,40 @@ func TestAddProductToCart(t *testing.T) {
 		}
 	}))
 
+	t.Run("save cart", Before(func(t *testing.T) {
+		productIds := []string{"1"}
+
+		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
+		productGateway.EXPECT().FindById(gomock.Any()).Return(products[1])
+		cartGateway.EXPECT().SaveCart(gomock.Any()).Times(1)
+		cartGateway.EXPECT().UpdateCart(gomock.Any()).Times(0)
+
+		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
+
+		sut.Execute(productIds)
+
+		cart := entities.Cart{}
+
+		cart.AddItem(products[0])
+
+		productGateway = mocks.NewMockIProductGateway(ctrl)
+		cartGateway = mocks.NewMockICartGateway(ctrl)
+
+		productGateway.EXPECT().FindById(gomock.Any()).Return(products[1])
+		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(&cart)
+		cartGateway.EXPECT().SaveCart(gomock.Any()).Times(0)
+		cartGateway.EXPECT().UpdateCart(gomock.Any()).Times(1)
+
+		another := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
+
+		another.Execute(productIds)
+	}))
+
 	t.Run("Add product to existing cart", Before(func(t *testing.T) {
 		id := "1"
 		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
+		cartGateway.EXPECT().SaveCart(gomock.Any()).Times(1)
+
 		productGateway.EXPECT().FindById(id).Return(nil)
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 

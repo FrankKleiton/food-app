@@ -36,6 +36,7 @@ func TestAddProductToCartController(t *testing.T) {
 		id := "1"
 		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
 		productGateway.EXPECT().FindById(id).Return(products[1])
+		cartGateway.EXPECT().SaveCart(gomock.Any()).Times(1)
 		interactor := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 		request := requests.ProductsIds{Ids: []string{id}}
 

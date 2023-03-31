@@ -47,3 +47,31 @@ func (mr *MockICartGatewayMockRecorder) GetActiveCart() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetActiveCart", reflect.TypeOf((*MockICartGateway)(nil).GetActiveCart))
 }
+
+// SaveCart mocks base method.
+func (m *MockICartGateway) SaveCart(cart adapters.ICart) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SaveCart", cart)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// SaveCart indicates an expected call of SaveCart.
+func (mr *MockICartGatewayMockRecorder) SaveCart(cart interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SaveCart", reflect.TypeOf((*MockICartGateway)(nil).SaveCart), cart)
+}
+
+// UpdateCart mocks base method.
+func (m *MockICartGateway) UpdateCart(cart adapters.ICart) bool {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateCart", cart)
+	ret0, _ := ret[0].(bool)
+	return ret0
+}
+
+// UpdateCart indicates an expected call of UpdateCart.
+func (mr *MockICartGatewayMockRecorder) UpdateCart(cart interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCart", reflect.TypeOf((*MockICartGateway)(nil).UpdateCart), cart)
+}
