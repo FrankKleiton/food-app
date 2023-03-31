@@ -43,7 +43,7 @@ func TestAddProductToCartController(t *testing.T) {
 
 		controller := controllers.AddProductToCart{Interactor: &interactor}
 
-		result := controller.Execute(request)
+		result := controller.AddToCart(request)
 
 		testing_utils.AssertTrue(reflect.TypeOf(result) == reflect.TypeOf(&entities.Cart{}), t)
 	}))

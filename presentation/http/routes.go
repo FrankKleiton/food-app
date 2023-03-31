@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 
 	"food-app/domain/adapters"
@@ -18,34 +19,40 @@ func MakeRouter(
 ) *Router {
 	router := Router{}
 
-	router.AddRoute("POST", "/cart", func(response http.ResponseWriter, request *http.Request) {
-		var model AddProductToCartModel
+	router.AddRoute("POST", "/cart", func(w http.ResponseWriter, r *http.Request) {
+		model, err := BuildModel[AddProductToCartModel](r.Body)
 
-		err := json.NewDecoder(request.Body).Decode(&model)
-
-		if err != nil {
-			println("Error: ", err.Error())
-		}
-
-		if len(model.Products) == 0 {
-			response.WriteHeader(http.StatusBadRequest)
+		if len(model.Products) == 0 || err != nil {
+			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
 
-		interactorRequest := requests.ProductsIds{Ids: model.Products}
+		request := requests.ProductsIds{Ids: model.Products}
 
 		controller := controllers.AddProductToCart{Interactor: Interactor}
 
-		controller.Execute(interactorRequest)
+		controller.AddToCart(request)
+
 		result, _ := Interactor.Execute(model.Products)
 
-		cartJson, _ := json.Marshal(result)
+		cartJson, err := json.Marshal(result)
 
-		// if ()
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
 
-		response.Header().Set("Content-Type", "application/json")
-		response.Write(cartJson)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(cartJson)
 	})
 
 	return &router
+}
+
+func BuildModel[T any](source io.Reader) (T, error) {
+	var destination T
+
+	err := json.NewDecoder(source).Decode(&destination)
+
+	return destination, err
 }

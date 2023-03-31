@@ -9,7 +9,7 @@ type AddProductToCart struct {
 	Interactor adapters.IAddProductToCart
 }
 
-func (c *AddProductToCart) Execute(request requests.ProductsIds) adapters.ICart {
+func (c *AddProductToCart) AddToCart(request requests.ProductsIds) adapters.ICart {
 	cart, _ := c.Interactor.Execute(request.Get())
 
 	return cart
