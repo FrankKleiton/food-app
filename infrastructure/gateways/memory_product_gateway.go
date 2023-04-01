@@ -15,7 +15,7 @@ func (g MemoryProductGateway) FindById(id string) adapters.IProduct {
 			return &product
 		}
 	}
-	return &entities.NotFoundProduct{}
+	return &entities.ErrorProduct{}
 }
 
 func MakeMemoryProductGateway() MemoryProductGateway {

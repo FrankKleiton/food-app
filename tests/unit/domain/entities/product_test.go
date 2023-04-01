@@ -9,7 +9,7 @@ import (
 func TestProduct(t *testing.T) {
 	t.Run("check types", func(t *testing.T) {
 		product := entities.Product{}
-		notFoundProduct := entities.NotFoundProduct{}
+		notFoundProduct := entities.ErrorProduct{}
 
 		testing_utils.AssertEqual(product.IsValid(), true, t)
 		testing_utils.AssertEqual(notFoundProduct.IsValid(), false, t)

@@ -1,13 +1,16 @@
 package main
 
 import (
-	httpServer "food-app/presentation/http"
+	"github.com/joho/godotenv"
 
 	"food-app/domain/interactors"
 	"food-app/infrastructure/gateways"
+	httpServer "food-app/presentation/http"
 )
 
 func main() {
+	godotenv.Load(".env")
+
 	productGateway := gateways.MakeMemoryProductGateway()
 	cartGateway := gateways.MemoryCartGateway{}
 
