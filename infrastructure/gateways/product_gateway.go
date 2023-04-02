@@ -1,32 +1,36 @@
 package gateways
 
 import (
+	"database/sql"
+	"os"
+
+	_ "github.com/lib/pq"
+
 	"food-app/domain/adapters"
 	"food-app/domain/entities"
-	infrastructureAdapters "food-app/infrastructure/adapters"
 )
 
 type ProductGateway struct {
-	Connection infrastructureAdapters.IConnection
 }
 
 func (g ProductGateway) FindById(id string) adapters.IProduct {
-	product := entities.Product{}
-	var parameters = []([]interface{}){
-		[]interface{}{id},
-		[]interface{}{
-			&product.Id,
-			&product.Name,
-			&product.Price,
-			&product.Description,
-			&product.Image,
-		},
+	connectionString := os.Getenv("CONNECTION_STRING")
+
+	db, err := sql.Open("postgres", connectionString)
+
+	if err != nil {
+		return entities.MakeErrorProduct("ServerError", err.Error())
 	}
 
 	query := "SELECT id, name, price, description, image FROM products WHERE id = $1 LIMIT 1"
 
-	if err := g.Connection.Query(query, parameters); err != nil {
+	result := db.QueryRow(query, id)
 
+	product := entities.Product{}
+
+	err = result.Scan(&product.Id, &product.Name, &product.Price, &product.Description, &product.Image)
+
+	if err != nil {
 		result := err.Error()
 
 		if result == "sql: no rows in result set" {
@@ -36,9 +40,5 @@ func (g ProductGateway) FindById(id string) adapters.IProduct {
 		return entities.MakeErrorProduct("ServerError", result)
 	}
 
-	if product.GetId() != "" {
-		return &product
-	}
-
-	return entities.MakeErrorProduct("NotFound")
+	return &product
 }

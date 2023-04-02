@@ -5,15 +5,17 @@ import (
 	"testing"
 
 	"food-app/domain/entities"
-	"food-app/infrastructure/database"
 	"food-app/infrastructure/gateways"
 	"food-app/tests/testing_utils"
+
+	"github.com/joho/godotenv"
 )
 
 func TestProductGateway(t *testing.T) {
+	godotenv.Load("../../.env")
+
 	t.Run("Gets product by id", func(t *testing.T) {
-		connection := database.PostgresConnection{}
-		gateway := gateways.ProductGateway{Connection: connection}
+		gateway := gateways.ProductGateway{}
 
 		product := gateway.FindById("1")
 
@@ -21,8 +23,7 @@ func TestProductGateway(t *testing.T) {
 	})
 
 	t.Run("Gets not found product", func(t *testing.T) {
-		connection := database.PostgresConnection{}
-		gateway := gateways.ProductGateway{Connection: connection}
+		gateway := gateways.ProductGateway{}
 
 		result := gateway.FindById("2")
 
