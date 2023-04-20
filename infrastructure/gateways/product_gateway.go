@@ -1,9 +1,7 @@
 package gateways
 
 import (
-	"database/sql"
-	"os"
-
+	"github.com/doug-martin/goqu/v9"
 	_ "github.com/lib/pq"
 
 	"food-app/domain/adapters"
@@ -11,33 +9,16 @@ import (
 )
 
 type ProductGateway struct {
+	Database *goqu.Database
 }
 
 func (g ProductGateway) FindById(id string) adapters.IProduct {
-	connectionString := os.Getenv("CONNECTION_STRING")
-
-	db, err := sql.Open("postgres", connectionString)
-
-	if err != nil {
-		return entities.MakeErrorProduct("ServerError", err.Error())
-	}
-
-	query := "SELECT id, name, price, description, image FROM products WHERE id = $1 LIMIT 1"
-
-	result := db.QueryRow(query, id)
-
 	product := entities.Product{}
 
-	err = result.Scan(&product.Id, &product.Name, &product.Price, &product.Description, &product.Image)
+	result, _ := g.Database.From("products").Where(goqu.Ex{"id": id}).Limit(1).ScanStruct(&product)
 
-	if err != nil {
-		result := err.Error()
-
-		if result == "sql: no rows in result set" {
-			return entities.MakeErrorProduct("NotFound")
-		}
-
-		return entities.MakeErrorProduct("ServerError", result)
+	if !result {
+		return entities.MakeErrorProduct("NotFound")
 	}
 
 	return &product
