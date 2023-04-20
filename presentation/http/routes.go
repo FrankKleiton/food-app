@@ -8,6 +8,7 @@ import (
 	"reflect"
 
 	"food-app/domain/adapters"
+	"food-app/infrastructure/queries"
 	"food-app/presentation/controllers"
 	"food-app/presentation/requests"
 )
@@ -22,8 +23,15 @@ func (m AddProductToCartModel) ContainsIds() bool {
 
 func MakeRouter(
 	Interactor adapters.IAddProductToCart,
+	ProductQuery queries.ProductQuery,
 ) *Router {
 	router := Router{}
+
+	router.AddRoute("GET", "/products", func(w http.ResponseWriter, r *http.Request) {
+		result := ProductQuery.GetAll()
+
+		JsonResponse(w, result, http.StatusOK)
+	})
 
 	router.AddRoute("POST", "/cart", func(w http.ResponseWriter, r *http.Request) {
 		model := BuildModel[AddProductToCartModel](r.Body)
