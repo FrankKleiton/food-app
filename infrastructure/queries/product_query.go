@@ -1,67 +1,27 @@
 package queries
 
 import (
-	"database/sql"
-	"os"
+	"food-app/domain/entities"
+
+	"github.com/doug-martin/goqu/v9"
 )
 
 type ProductQuery struct {
+	Database *goqu.Database
 }
 
 type Result map[string]any
 
 func (q ProductQuery) GetAll() Result {
-	connectionString := os.Getenv("CONNECTION_STRING")
+	var products []entities.Product
 
-	db, err := sql.Open("postgres", connectionString)
-
-	if err != nil {
-		return Result{
-			"error":      err.Error(),
-			"statusCode": 500,
-		}
-	}
-
-	query := "SELECT id, name, price, description, image FROM products"
-
-	result, err := db.Query(query)
+	err := q.Database.From("products").ScanStructs(&products)
 
 	if err != nil {
 		return Result{
 			"error":      err.Error(),
-			"statusCode": 500,
+			"statusCode": 404,
 		}
-	}
-
-	products := []Result{}
-
-	for result.Next() {
-		product := Result{
-			"Id":          "",
-			"Name":        "",
-			"Price":       "",
-			"Description": "",
-			"Image":       "",
-		}
-
-		err = result.Scan(product["Id"], product["Name"], product["Price"], product["Description"], product["Image"])
-
-		if err != nil {
-
-			if err.Error() == "sql: no rows in result set" {
-				return Result{
-					"error":      "Product not found",
-					"statusCode": 404,
-				}
-			}
-
-			return Result{
-				"error":      err.Error(),
-				"statusCode": 500,
-			}
-		}
-
-		products = append(products, product)
 	}
 
 	return Result{"products": products}
