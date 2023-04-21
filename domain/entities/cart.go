@@ -19,6 +19,7 @@ func (c *NotFoundCart) GetItems() []adapters.IItem {
 }
 
 type Cart struct {
+	Id    int
 	Items []adapters.IItem
 }
 

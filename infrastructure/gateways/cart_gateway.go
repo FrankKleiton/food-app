@@ -1,45 +1,70 @@
 package gateways
 
-// type CartGateway struct {
-// }
+import (
+	"food-app/domain/adapters"
+	"food-app/domain/entities"
 
-// func (g *CartGateway) GetActiveCart() adapters.ICart {
-// 	connectionString := os.Getenv("CONNECTION_STRING")
+	"github.com/doug-martin/goqu/v9"
+)
 
-// 	db, err := sql.Open("postgres", connectionString)
+type CartGateway struct {
+	Database *goqu.Database
+}
 
-// 	if err != nil {
-// 		// return entities.MakeErrorProduct("ServerError", err.Error())
-// 		// TODO: return error cart
-// 		return nil
-// 	}
+type ProductModel struct {
+	Id          string
+	Name        string
+	Price       float64
+	Image       string
+	Description string
+	Amount      int
+}
 
-// 	query := "SELECT id, name, price, description, image FROM products WHERE id = $1 LIMIT 1"
+type CartModel struct {
+	Id string
+}
 
-// 	result := db.QueryRow(query, id)
+func (g *CartGateway) GetActiveCart() adapters.ICart {
+	cartModel := CartModel{}
+	productModels := []ProductModel{}
 
-// 	product := entities.Product{}
+	cartResult, cartErr := g.Database.From("carts").Where(goqu.C("checked_out_at").Eq(nil)).ScanStruct(&cartModel)
 
-// 	err = result.Scan(&product.Id, &product.Name, &product.Price, &product.Description, &product.Image)
+	if cartErr != nil || !cartResult {
+		return &entities.NotFoundCart{}
+	}
 
-// 	if err != nil {
-// 		result := err.Error()
+	productErr := g.Database.Select("items.amount", "p.id", "p.name", "p.price", "p.image", "p.description").
+		From("items").
+		Join(goqu.T("products").As("p"), goqu.On(goqu.Ex{"items.product_id": goqu.I("p.id")})).
+		Where(goqu.C("cart_id").Eq(cartModel.Id)).
+		ScanStructs(&productModels)
 
-// 		if result == "sql: no rows in result set" {
-// 			return entities.MakeErrorProduct("NotFound")
-// 		}
+	if productErr != nil {
+		return &entities.NotFoundCart{}
+	}
 
-// 		return entities.MakeErrorProduct("ServerError", result)
-// 	}
+	cart := entities.Cart{}
 
-// 	return &product
-// 	return nil
-// }
+	for _, model := range productModels {
+		for i := 0; i < model.Amount; i++ {
+			cart.AddItem(&entities.Product{
+				Id:          model.Id,
+				Name:        model.Name,
+				Price:       model.Price,
+				Image:       model.Image,
+				Description: model.Description,
+			})
+		}
+	}
 
-// func (g *CartGateway) SaveCart(cart adapters.ICart) bool {
-// 	return true
-// }
+	return &cart
+}
 
-// func (g *CartGateway) UpdateCart(cart adapters.ICart) bool {
-// 	return true
-// }
+func (g *CartGateway) SaveCart(cart adapters.ICart) bool {
+	return true
+}
+
+func (g *CartGateway) UpdateCart(cart adapters.ICart) bool {
+	return true
+}
