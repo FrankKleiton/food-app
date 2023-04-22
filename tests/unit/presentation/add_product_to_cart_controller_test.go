@@ -6,6 +6,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 
+	"food-app/domain/adapters"
 	"food-app/domain/entities"
 	"food-app/domain/interactors"
 	"food-app/presentation/controllers"
@@ -34,7 +35,11 @@ func TestAddProductToCartController(t *testing.T) {
 		// Act
 		// Assert
 		id := "1"
-		productGateway.EXPECT().FindById(id).Return(products[1])
+		productGateway := mocks.ProductGatewayMock{
+			Products: []adapters.IProduct{
+				&entities.Product{Id: "1"},
+			},
+		}
 		cartGateway := mocks.CartGatewayMock{}
 		interactor := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 		request := requests.ProductsIds{Ids: []string{id}}

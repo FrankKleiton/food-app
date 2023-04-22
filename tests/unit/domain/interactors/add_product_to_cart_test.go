@@ -6,6 +6,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 
+	"food-app/domain/adapters"
 	"food-app/domain/entities"
 	"food-app/domain/interactors"
 	"food-app/tests/mocks"
@@ -14,14 +15,18 @@ import (
 
 var productGateway *mocks.MockIProductGateway
 var cartGateway *mocks.MockICartGateway
-var products []*mocks.MockIProduct
+var products []adapters.IProduct
 var ctrl *gomock.Controller
 
 func Before(callback func(t *testing.T)) func(t *testing.T) {
 	ctrl = gomock.NewController(&testing.T{})
 	productGateway = mocks.NewMockIProductGateway(ctrl)
 	cartGateway = mocks.NewMockICartGateway(ctrl)
-	products = testing_utils.MakeProducts(ctrl)
+	products = []adapters.IProduct{
+		&entities.Product{Id: "0"},
+		&entities.Product{Id: "1"},
+	}
+
 	defer ctrl.Finish()
 
 	return callback
@@ -33,8 +38,7 @@ func TestAddProductToCart(t *testing.T) {
 
 		cartGateway := mocks.CartGatewayMock{}
 
-		productGateway.EXPECT().FindById(productIds[0]).Return(products[0])
-		productGateway.EXPECT().FindById(productIds[1]).Return(products[1])
+		productGateway := mocks.ProductGatewayMock{Products: products}
 
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
@@ -51,7 +55,7 @@ func TestAddProductToCart(t *testing.T) {
 		productIds := []string{"1"}
 
 		cartGateway := mocks.CartGatewayMock{}
-		productGateway.EXPECT().FindById(gomock.Any()).Return(products[1])
+		productGateway := mocks.ProductGatewayMock{Products: products}
 
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
@@ -61,21 +65,21 @@ func TestAddProductToCart(t *testing.T) {
 
 		cart.AddItem(products[0])
 
-		productGateway = mocks.NewMockIProductGateway(ctrl)
 		cartGateway = mocks.CartGatewayMock{}
-
-		productGateway.EXPECT().FindById(gomock.Any()).Return(products[1])
 
 		another := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
 		another.Execute(productIds)
+
+		testing_utils.AssertEqual(len(cart.GetItems()), 1, t)
 	}))
 
 	t.Run("Add product to existing cart", Before(func(t *testing.T) {
-		id := "1"
+		id := "-1"
+
 		cartGateway := mocks.CartGatewayMock{}
 
-		productGateway.EXPECT().FindById(id).Return(nil)
+		productGateway := mocks.ProductGatewayMock{Products: products}
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
 		result, error := sut.Execute([]string{id})

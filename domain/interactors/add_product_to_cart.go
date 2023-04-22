@@ -23,7 +23,9 @@ func (a *AddProductToCart) Execute(ids []string) (adapters.ICart, error) {
 	}
 
 	for _, id := range ids {
-		product := a.ProductGateway.FindById(id)
+		channel := make(chan adapters.IProduct)
+		go a.ProductGateway.FindById(id, channel)
+		product := <-channel
 
 		if product == nil {
 			return &entities.NotFoundCart{}, errors.New("cannot add null value to cart")

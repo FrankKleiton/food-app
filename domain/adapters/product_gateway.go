@@ -1,5 +1,5 @@
 package adapters
 
 type IProductGateway interface {
-	FindById(id string) IProduct
+	FindById(id string, channel chan IProduct)
 }

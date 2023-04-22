@@ -12,14 +12,14 @@ type ProductGateway struct {
 	Database *goqu.Database
 }
 
-func (g ProductGateway) FindById(id string) adapters.IProduct {
+func (g ProductGateway) FindById(id string, channel chan adapters.IProduct) {
 	product := entities.Product{}
 
 	result, _ := g.Database.From("products").Where(goqu.Ex{"id": id}).Limit(1).ScanStruct(&product)
 
 	if !result {
-		return entities.MakeErrorProduct("NotFound")
+		channel <- entities.MakeErrorProduct("NotFound")
 	}
 
-	return &product
+	channel <- &product
 }
