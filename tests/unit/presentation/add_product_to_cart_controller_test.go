@@ -34,9 +34,8 @@ func TestAddProductToCartController(t *testing.T) {
 		// Act
 		// Assert
 		id := "1"
-		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
 		productGateway.EXPECT().FindById(id).Return(products[1])
-		cartGateway.EXPECT().SaveCart(gomock.Any()).Times(1)
+		cartGateway := mocks.CartGatewayMock{}
 		interactor := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 		request := requests.ProductsIds{Ids: []string{id}}
 

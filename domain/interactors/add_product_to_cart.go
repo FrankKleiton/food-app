@@ -13,7 +13,9 @@ type AddProductToCart struct {
 }
 
 func (a *AddProductToCart) Execute(ids []string) (adapters.ICart, error) {
-	result := a.CartGateway.GetActiveCart()
+	channel := make(chan adapters.ICart)
+	go a.CartGateway.GetActiveCart(channel)
+	result := <-channel
 	cart := result
 
 	if cart == nil {

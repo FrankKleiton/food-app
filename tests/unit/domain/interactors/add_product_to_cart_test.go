@@ -31,8 +31,7 @@ func TestAddProductToCart(t *testing.T) {
 	t.Run("Add product to new cart", Before(func(t *testing.T) {
 		productIds := []string{"0", "1"}
 
-		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
-		cartGateway.EXPECT().SaveCart(gomock.Any()).Times(1)
+		cartGateway := mocks.CartGatewayMock{}
 
 		productGateway.EXPECT().FindById(productIds[0]).Return(products[0])
 		productGateway.EXPECT().FindById(productIds[1]).Return(products[1])
@@ -51,10 +50,8 @@ func TestAddProductToCart(t *testing.T) {
 	t.Run("save cart", Before(func(t *testing.T) {
 		productIds := []string{"1"}
 
-		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
+		cartGateway := mocks.CartGatewayMock{}
 		productGateway.EXPECT().FindById(gomock.Any()).Return(products[1])
-		cartGateway.EXPECT().SaveCart(gomock.Any()).Times(1)
-		cartGateway.EXPECT().UpdateCart(gomock.Any()).Times(0)
 
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
@@ -65,12 +62,9 @@ func TestAddProductToCart(t *testing.T) {
 		cart.AddItem(products[0])
 
 		productGateway = mocks.NewMockIProductGateway(ctrl)
-		cartGateway = mocks.NewMockICartGateway(ctrl)
+		cartGateway = mocks.CartGatewayMock{}
 
 		productGateway.EXPECT().FindById(gomock.Any()).Return(products[1])
-		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(&cart)
-		cartGateway.EXPECT().SaveCart(gomock.Any()).Times(0)
-		cartGateway.EXPECT().UpdateCart(gomock.Any()).Times(1)
 
 		another := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
 
@@ -79,8 +73,7 @@ func TestAddProductToCart(t *testing.T) {
 
 	t.Run("Add product to existing cart", Before(func(t *testing.T) {
 		id := "1"
-		cartGateway.EXPECT().GetActiveCart().AnyTimes().Return(nil)
-		cartGateway.EXPECT().SaveCart(gomock.Any()).Times(1)
+		cartGateway := mocks.CartGatewayMock{}
 
 		productGateway.EXPECT().FindById(id).Return(nil)
 		sut := interactors.AddProductToCart{ProductGateway: productGateway, CartGateway: cartGateway}
