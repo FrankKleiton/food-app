@@ -35,9 +35,9 @@ func (a *AddProductToCart) Execute(ids []string) (adapters.ICart, error) {
 	}
 
 	if result == nil {
-		a.CartGateway.SaveCart(cart)
+		go a.CartGateway.SaveCart(cart)
 	} else {
-		a.CartGateway.UpdateCart(cart)
+		go a.CartGateway.UpdateCart(cart)
 	}
 
 	return cart, nil
